@@ -1,0 +1,17 @@
+spring:
+    data:
+        mongodb:
+            host: localhost
+            port: 27017
+            database: mindmap
+            username: user
+            password: pass
+banner:
+  location: banner.txt
+endpoints:
+  health:
+    enabled: true
+  status:
+    enabled: true
+    web:
+      enabled: true
