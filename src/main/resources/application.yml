@@ -6,12 +6,16 @@ spring:
             database: mindmap
             username: user
             password: pass
-banner:
-  location: banner.txt
-endpoints:
-  health:
-    enabled: true
-  status:
-    enabled: true
+    banner:
+      location: banner.txt
+management:
+  endpoints:
+    enabled-by-default: true
     web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+    info:
       enabled: true

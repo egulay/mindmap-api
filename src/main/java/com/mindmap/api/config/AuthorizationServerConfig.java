@@ -66,7 +66,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     }
 
     @Bean
-    public FilterRegistrationBean customCorsFilter() {
+    @SuppressWarnings("unchecked")
+    public FilterRegistrationBean customCORSFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
