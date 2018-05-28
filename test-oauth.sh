@@ -31,3 +31,8 @@ echo ''
 echo '------ GET ALL USERS ------'
 curl -H "Authorization: Bearer ${token}" -X GET http://localhost:8080/api/user/list/ | python -m json.tool
 echo '------ GET ALL USERS ------'
+
+echo ''
+echo '------ GET TREE------'
+curl -H "Authorization: Bearer ${token}" -X GET http://localhost:8080/api/node/getTree/5b0be222f3be1b388cdc8dfd | python -m json.tool
+echo '------ GET TREE ------'

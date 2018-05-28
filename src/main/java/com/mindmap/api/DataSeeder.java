@@ -3,9 +3,14 @@ package com.mindmap.api;
 import com.mindmap.api.model.Account;
 import com.mindmap.api.model.Department;
 import com.mindmap.api.model.Role;
+import com.mindmap.api.model.tree.Children;
+import com.mindmap.api.model.tree.Leaf;
+import com.mindmap.api.model.tree.NodeData;
+import com.mindmap.api.model.tree.TreeObject;
 import com.mindmap.api.repository.AccountRepository;
 import com.mindmap.api.repository.DepartmentRepository;
 import com.mindmap.api.repository.RoleRepository;
+import com.mindmap.api.repository.TreeObjectRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +21,7 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -24,25 +30,249 @@ public class DataSeeder {
     private final AccountRepository accountRepository;
     private final RoleRepository roleRepository;
     private final DepartmentRepository departmentRepository;
+    //    private final MindMapRepository mindMapRepository;
+    private final TreeObjectRepository treeObjectRepository;
 
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public DataSeeder(AccountRepository accountRepository
-            , RoleRepository roleRepository, DepartmentRepository departmentRepository, PasswordEncoder passwordEncoder) {
+            , RoleRepository roleRepository, DepartmentRepository departmentRepository, TreeObjectRepository treeObjectRepository, PasswordEncoder passwordEncoder) {
         this.accountRepository = accountRepository;
         this.roleRepository = roleRepository;
         this.departmentRepository = departmentRepository;
+        this.treeObjectRepository = treeObjectRepository;
+//        this.mindMapRepository = mindMapRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     @EventListener(value = ContextRefreshedEvent.class)
     public void seed() {
-        seedSampleData();
+//        seedUserData();
+        seedTreeData();
     }
 
-    private void seedSampleData() {
-        log.info("Seeding sample data...");
+    private void seedTreeData() {
+        log.info("Seeding tree data...");
+        String expandedIcon = "fa-folder-open";
+        String collapsedIcon = "fa-folder";
+        String icon = "fa-file-word-o";
+
+        treeObjectRepository.deleteAll().then(
+                Mono.just("5b0be222f3be1b388cdc8dfd").flatMap(departmentId -> {
+                    List<Leaf> leafListAngular = new ArrayList<Leaf>() {{
+                        add(Leaf.builder().data(new ObjectId().toString()).icon(icon).label("Material").build());
+                        add(Leaf.builder().data(new ObjectId().toString()).icon(icon).label("TypeScript").build());
+                    }};
+                    List<Children> childListNodeJs = new ArrayList<Children>() {{
+                        add(Children.builder()
+                                .label("Angular")
+                                .data(new ObjectId().toString())
+                                .collapsedIcon(collapsedIcon)
+                                .expandedIcon(expandedIcon)
+                                .children(leafListAngular)
+                                .build());
+                    }};
+
+                    List<Leaf> leafListSpringMVC = new ArrayList<Leaf>() {{
+                        add(Leaf.builder().data(new ObjectId().toString()).icon(icon).label("WebFlux").build());
+                    }};
+                    List<Children> childListJava = new ArrayList<Children>() {{
+                        add(Children.builder()
+                                .label("Spring MVC")
+                                .data(new ObjectId().toString())
+                                .collapsedIcon(collapsedIcon)
+                                .expandedIcon(expandedIcon)
+                                .children(leafListSpringMVC)
+                                .build());
+                    }};
+
+                    List<NodeData> nodeList = new ArrayList<>();
+
+                    nodeList.add(NodeData.builder()
+                            .children(childListNodeJs)
+                            .data(new ObjectId().toString())
+                            .label("NodeJS")
+                            .collapsedIcon(collapsedIcon)
+                            .expandedIcon(expandedIcon)
+                            .build());
+
+                    nodeList.add(NodeData.builder()
+                            .children(childListJava)
+                            .data(new ObjectId().toString())
+                            .label("Java")
+                            .collapsedIcon(collapsedIcon)
+                            .expandedIcon(expandedIcon)
+                            .build());
+
+                    return treeObjectRepository.save(TreeObject.builder()
+                            .departmentId(departmentId)
+                            .data(nodeList)
+                            .build());
+                })
+        ).log().subscribe(value -> log.info("Completed: Seeding tree data..."));
+    }
+
+//    private void seedTreeData() {
+//        log.info("Seeding tree data...");
+//
+//        String departmentId = departmentRepository.findByName("IT").block().getId();
+//        String nodeJsId = new ObjectId().toString();
+//        String javaId = new ObjectId().toString();
+//        String angularId = new ObjectId().toString();
+//        String springId = new ObjectId().toString();
+//        String materialId = new ObjectId().toString();
+//        String typeScriptId = new ObjectId().toString();
+//        String webFluxId = new ObjectId().toString();
+//
+//        mindMapRepository.deleteAll()
+//                .then(
+//                        Mono.just("NodeJs")
+//                                .flatMap(label -> {
+//                                    String mindMapId = new ObjectId().toString();
+//                                    return mindMapRepository.save(MindMap.builder()
+//                                            .id(nodeJsId)
+//                                            .parentId("-")
+//                                            .label(label)
+//                                            .departmentId(departmentId)
+//                                            .hasChildren(true)
+//                                            .isLeaf(false)
+//                                            .vote(Vote.builder()
+//                                                    .id(new ObjectId().toString())
+//                                                    .departmentId(departmentId)
+//                                                    .count(0)
+//                                                    .mindMapId(mindMapId)
+//                                                    .build()).build()
+//                                    );
+//                                })
+//                )
+//                .then(
+//                        Mono.just("Java")
+//                                .flatMap(label -> {
+//                                    String mindMapId = new ObjectId().toString();
+//                                    return mindMapRepository.save(MindMap.builder()
+//                                            .id(javaId)
+//                                            .parentId("-")
+//                                            .label(label)
+//                                            .hasChildren(true)
+//                                            .isLeaf(false)
+//                                            .departmentId(departmentId)
+//                                            .vote(Vote.builder()
+//                                                    .id(new ObjectId().toString())
+//                                                    .departmentId(departmentId)
+//                                                    .count(0)
+//                                                    .mindMapId(mindMapId)
+//                                                    .build()).build()
+//                                    );
+//                                })
+//                )
+//                .then(
+//                        Mono.just("Angular")
+//                                .flatMap(label -> {
+//                                    String mindMapId = new ObjectId().toString();
+//                                    return mindMapRepository.save(MindMap.builder()
+//                                            .id(angularId)
+//                                            .parentId(nodeJsId)
+//                                            .label(label)
+//                                            .hasChildren(true)
+//                                            .isLeaf(false)
+//                                            .departmentId(departmentId)
+//                                            .vote(Vote.builder()
+//                                                    .id(new ObjectId().toString())
+//                                                    .departmentId(departmentId)
+//                                                    .count(0)
+//                                                    .mindMapId(mindMapId)
+//                                                    .build()).build()
+//                                    );
+//                                })
+//                )
+//                .then(
+//                        Mono.just("Spring MVC")
+//                                .flatMap(label -> {
+//                                    String mindMapId = new ObjectId().toString();
+//                                    return mindMapRepository.save(MindMap.builder()
+//                                            .id(springId)
+//                                            .parentId(javaId)
+//                                            .label(label)
+//                                            .hasChildren(true)
+//                                            .isLeaf(false)
+//                                            .departmentId(departmentId)
+//                                            .vote(Vote.builder()
+//                                                    .id(new ObjectId().toString())
+//                                                    .departmentId(departmentId)
+//                                                    .count(0)
+//                                                    .mindMapId(mindMapId)
+//                                                    .build()).build()
+//                                    );
+//                                })
+//                )
+////                .then(
+////                        Mono.just("Material")
+////                                .flatMap(label -> {
+////                                    String mindMapId = new ObjectId().toString();
+////                                    return mindMapRepository.save(MindMap.builder()
+////                                            .id(materialId)
+////                                            .parentId(angularId)
+////                                            .label(label)
+////                                            .hasChildren(false)
+////                                            .isLeaf(true)
+////                                            .departmentId(departmentId)
+////                                            .vote(Vote.builder()
+////                                                    .id(new ObjectId().toString())
+////                                                    .departmentId(departmentId)
+////                                                    .count(0)
+////                                                    .mindMapId(mindMapId)
+////                                                    .build()).build()
+////                                    );
+////                                })
+////                )
+////                .then(
+////                        Mono.just("TypeScript")
+////                                .flatMap(label -> {
+////                                    String mindMapId = new ObjectId().toString();
+////                                    return mindMapRepository.save(MindMap.builder()
+////                                            .id(typeScriptId)
+////                                            .parentId(angularId)
+////                                            .label(label)
+////                                            .hasChildren(false)
+////                                            .isLeaf(true)
+////                                            .departmentId(departmentId)
+////                                            .vote(Vote.builder()
+////                                                    .id(new ObjectId().toString())
+////                                                    .departmentId(departmentId)
+////                                                    .count(0)
+////                                                    .mindMapId(mindMapId)
+////                                                    .build()).build()
+////                                    );
+////                                })
+////                )
+////                .then(
+////                        Mono.just("WebFlux")
+////                                .flatMap(label -> {
+////                                    String mindMapId = new ObjectId().toString();
+////                                    return mindMapRepository.save(MindMap.builder()
+////                                            .id(webFluxId)
+////                                            .parentId(springId)
+////                                            .label(label)
+////                                            .hasChildren(false)
+////                                            .isLeaf(true)
+////                                            .departmentId(departmentId)
+////                                            .vote(Vote.builder()
+////                                                    .id(new ObjectId().toString())
+////                                                    .departmentId(departmentId)
+////                                                    .count(0)
+////                                                    .mindMapId(mindMapId)
+////                                                    .build()).build()
+////                                    );
+////                                })
+////                )
+//                .log()
+//                .subscribe(value -> log.info("Completed: Seeding tree data..."));
+//    }
+
+
+    private void seedUserData() {
+        log.info("Seeding user data...");
         roleRepository.deleteAll()
                 .thenMany(
                         Flux.just("User", "Admin", "SysAdmin")
@@ -98,10 +328,7 @@ public class DataSeeder {
                         )
                 )
                 .log()
-                .subscribe(
-                        null,
-                        null,
-                        () -> log.info("Completed: Seeding sample data...")
+                .subscribe(value -> log.info("Completed: Seeding user data...")
                 );
     }
 }
