@@ -174,7 +174,7 @@ public class DataSeeder {
                                 add(driveId);
                                 add(skillsetId);
                                 add(curiosityId);
-                                add(emotionalId);
+//                                add(emotionalId);
                                 add(courageId);
                                 add(openmindedId);
                                 add(outsideOfBoxId);
@@ -253,14 +253,14 @@ public class DataSeeder {
                                 .departmentId(departmentId)
                                 .build()))
                 )
-                .then(
+/*                .then(
                         Mono.just("Emotional safety").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
                                 .id(emotionalId)
                                 .childrenIds(null)
                                 .label(label)
                                 .departmentId(departmentId)
                                 .build()))
-                )
+                )*/
                 .then(
                         Mono.just("Courage").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
                                 .id(courageId)
@@ -443,6 +443,7 @@ public class DataSeeder {
                 )
                 .then(
                         Mono.just("Management").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                                .id(managementId)
                                 .childrenIds(null)
                                 .label(label)
                                 .departmentId(departmentId)
@@ -498,7 +499,7 @@ public class DataSeeder {
                 )
                 .then(
                         Mono.just("Fun").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
-                                .id(colleaguesId)
+                                .id(funId)
                                 .childrenIds(null)
                                 .label(label)
                                 .departmentId(departmentId)
