@@ -64,9 +64,21 @@ public class DataSeeder {
         String prototypingId = new ObjectId().toString();
         String recruitmentId = new ObjectId().toString();
 
-        String typeScriptId = new ObjectId().toString();
-        String springId = new ObjectId().toString();
-        String webFluxId = new ObjectId().toString();
+        //Mindset
+        String driveId = new ObjectId().toString();
+        String skillsetId = new ObjectId().toString();
+        String curiosityId = new ObjectId().toString();
+        String openmindedId = new ObjectId().toString();
+        String emotionalId = new ObjectId().toString();
+        String courageId = new ObjectId().toString();
+        String outsideOfBoxId = new ObjectId().toString();
+        String agile2Id = new ObjectId().toString();
+        String takingRiskId = new ObjectId().toString();
+        String ownershipId = new ObjectId().toString();
+        String continuousId = new ObjectId().toString();
+        String rotationsId = new ObjectId().toString();
+        String trainingsId = new ObjectId().toString();
+
         String mindMapId = new ObjectId().toString();
 
         String departmentId = "5b0be222f3be1b388cdc8dfd";
@@ -127,11 +139,144 @@ public class DataSeeder {
                                 .build()))
                 )
                 .then(
+                        Mono.just("Mindset").flatMap(label -> {
+                            List<String> childIds = new ArrayList<String>() {{
+                                add(driveId);
+                                add(skillsetId);
+                                add(curiosityId);
+                                add(emotionalId);
+                                add(courageId);
+                                add(openmindedId);
+                                add(outsideOfBoxId);
+                                add(agile2Id);
+                                add(takingRiskId);
+                                add(ownershipId);
+                            }};
+                            return treeStructureRepository.save(TreeStructure.builder()
+                                    .id(mindsetId)
+                                    .childrenIds(childIds)
+                                    .label(label)
+                                    .departmentId(departmentId)
+                                    .build());
+                        })
+                )
+                .then(
+                        Mono.just("Drive").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                                .id(driveId)
+                                .childrenIds(null)
+                                .label(label)
+                                .departmentId(departmentId)
+                                .build()))
+                )
+                .then(
+                        Mono.just("Skillset").flatMap(label -> {
+                            List<String> childIds = new ArrayList<String>() {{
+                                add(continuousId);
+                                add(rotationsId);
+                                add(trainingsId);
+                            }};
+                            return treeStructureRepository.save(TreeStructure.builder()
+                                    .id(skillsetId)
+                                    .childrenIds(childIds)
+                                    .label(label)
+                                    .departmentId(departmentId)
+                                    .build());
+                        })
+                )
+                .then(
+                        Mono.just("Continuous learning").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                                .id(continuousId)
+                                .childrenIds(null)
+                                .label(label)
+                                .departmentId(departmentId)
+                                .build()))
+                )
+                .then(
+                        Mono.just("Job rotations").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                                .id(rotationsId)
+                                .childrenIds(null)
+                                .label(label)
+                                .departmentId(departmentId)
+                                .build()))
+                )
+                .then(
+                        Mono.just("Trainings").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                                .id(trainingsId)
+                                .childrenIds(null)
+                                .label(label)
+                                .departmentId(departmentId)
+                                .build()))
+                )
+                .then(
+                        Mono.just("Curiosity").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                                .id(curiosityId)
+                                .childrenIds(null)
+                                .label(label)
+                                .departmentId(departmentId)
+                                .build()))
+                )
+                .then(
+                        Mono.just("Open-minded").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                                .id(openmindedId)
+                                .childrenIds(null)
+                                .label(label)
+                                .departmentId(departmentId)
+                                .build()))
+                )
+                .then(
+                        Mono.just("Emotional safety").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                                .id(emotionalId)
+                                .childrenIds(null)
+                                .label(label)
+                                .departmentId(departmentId)
+                                .build()))
+                )
+                .then(
+                        Mono.just("Courage").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                                .id(courageId)
+                                .childrenIds(null)
+                                .label(label)
+                                .departmentId(departmentId)
+                                .build()))
+                )
+                .then(
+                        Mono.just("Think outside the box").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                                .id(outsideOfBoxId)
+                                .childrenIds(null)
+                                .label(label)
+                                .departmentId(departmentId)
+                                .build()))
+                )
+                .then(
+                        Mono.just("Agile").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                                .id(agile2Id)
+                                .childrenIds(null)
+                                .label(label)
+                                .departmentId(departmentId)
+                                .build()))
+                )
+                .then(
+                        Mono.just("Taking risk/challenges").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                                .id(takingRiskId)
+                                .childrenIds(null)
+                                .label(label)
+                                .departmentId(departmentId)
+                                .build()))
+                )
+                .then(
+                        Mono.just("Ownership").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                                .id(ownershipId)
+                                .childrenIds(null)
+                                .label(label)
+                                .departmentId(departmentId)
+                                .build()))
+                )
+                .then(
                         Mono.just("Environment").flatMap(label -> {
                             List<String> childIds = new ArrayList<String>() {{
                                 add(creativeRoomsId);
-//                                add(prototypingId);
-//                                add(recruitmentId);
+                                add(prototypingId);
+                                add(recruitmentId);
 
                             }};
                             return treeStructureRepository.save(TreeStructure.builder()
@@ -149,38 +294,23 @@ public class DataSeeder {
                                 .label(label)
                                 .departmentId(departmentId)
                                 .build()))
-                )                /*
-                .then(
-                        Mono.just("Angular CLI").flatMap(label -> {
-                            List<String> childIds = new ArrayList<String>() {{
-                                add(typeScriptId);
-                                add(materialId);
-                            }};
-                            return treeStructureRepository.save(TreeStructure.builder()
-                                    .id(angularId)
-                                    .childrenIds(childIds)
-                                    .label(label)
-                                    .departmentId(departmentId)
-                                    .build());
-                        })
                 )
                 .then(
-                        Mono.just("TypeScript").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
-                                .id(typeScriptId)
+                        Mono.just("Prototyping environment").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                                .id(prototypingId)
                                 .childrenIds(null)
                                 .label(label)
                                 .departmentId(departmentId)
                                 .build()))
                 )
                 .then(
-                        Mono.just("Material").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
-                                .id(materialId)
+                        Mono.just("HR recruitment").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                                .id(recruitmentId)
                                 .childrenIds(null)
                                 .label(label)
                                 .departmentId(departmentId)
                                 .build()))
                 )
-                */
                 .log().subscribe(value -> log.info("Completed: Seeding tree data..."));
     }
 
