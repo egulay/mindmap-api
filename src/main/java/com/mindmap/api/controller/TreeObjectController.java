@@ -1,6 +1,5 @@
 package com.mindmap.api.controller;
 
-import com.mindmap.api.model.tree.NodeData;
 import com.mindmap.api.model.tree.TreeObject;
 import com.mindmap.api.service.TreeObjectService;
 import lombok.extern.slf4j.Slf4j;

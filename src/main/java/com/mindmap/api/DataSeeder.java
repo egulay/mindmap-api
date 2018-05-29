@@ -1,9 +1,6 @@
 package com.mindmap.api;
 
-import com.mindmap.api.model.Account;
-import com.mindmap.api.model.Department;
-import com.mindmap.api.model.Role;
-import com.mindmap.api.model.Tree;
+import com.mindmap.api.model.*;
 import com.mindmap.api.model.tree.Children;
 import com.mindmap.api.model.tree.Leaf;
 import com.mindmap.api.model.tree.NodeData;
@@ -30,17 +27,20 @@ public class DataSeeder {
     private final DepartmentRepository departmentRepository;
     private final TreeObjectRepository treeObjectRepository;
 
+    private final TreeStructureRepository  treeStructureRepository;
+
     private final PasswordEncoder passwordEncoder;
 
     private final TreeRepository treeRepository;
 
     @Autowired
     public DataSeeder(AccountRepository accountRepository
-            , RoleRepository roleRepository, DepartmentRepository departmentRepository, TreeObjectRepository treeObjectRepository, PasswordEncoder passwordEncoder, TreeRepository treeRepository) {
+            , RoleRepository roleRepository, DepartmentRepository departmentRepository, TreeObjectRepository treeObjectRepository, TreeStructureRepository treeStructureRepository, PasswordEncoder passwordEncoder, TreeRepository treeRepository) {
         this.accountRepository = accountRepository;
         this.roleRepository = roleRepository;
         this.departmentRepository = departmentRepository;
         this.treeObjectRepository = treeObjectRepository;
+        this.treeStructureRepository = treeStructureRepository;
         this.passwordEncoder = passwordEncoder;
         this.treeRepository = treeRepository;
     }
@@ -48,7 +48,113 @@ public class DataSeeder {
     @EventListener(value = ContextRefreshedEvent.class)
     public void seed() {
 //        seedUserData();
-        seedTreeData2();
+        seedTreeData3();
+    }
+
+    private void seedTreeData3() {
+        String nodeJsId = new ObjectId().toString();
+        String javaId = new ObjectId().toString();
+        String angularId = new ObjectId().toString();
+        String materialId = new ObjectId().toString();
+        String typeScriptId = new ObjectId().toString();
+        String springId = new ObjectId().toString();
+        String webFluxId = new ObjectId().toString();
+        String mindMapId= new ObjectId().toString();
+
+        String departmentId = "5b0be222f3be1b388cdc8dfd";
+
+        treeStructureRepository.deleteAll()
+                .then(
+                        Mono.just("Mind Map").flatMap(label -> {
+                            List<String> childIds = new ArrayList<String>() {{
+                                    add(nodeJsId);
+                                    add(javaId);
+                                }};
+                            return treeStructureRepository.save(TreeStructure.builder()
+                                    .id(mindMapId)
+                                    .childrenIds(childIds)
+                                    .label(label)
+                                    .departmentId(departmentId)
+                                    .build());
+                        })
+                )
+                .then(
+                        Mono.just("Java").flatMap(label -> {
+                            List<String> childIds = new ArrayList<String>() {{
+                                add(springId);
+                            }};
+                            return treeStructureRepository.save(TreeStructure.builder()
+                                    .id(javaId)
+                                    .childrenIds(childIds)
+                                    .label(label)
+                                    .departmentId(departmentId)
+                                    .build());
+                        })
+                )
+                .then(
+                        Mono.just("Spring MVC").flatMap(label -> {
+                            List<String> childIds = new ArrayList<String>() {{
+                                add(webFluxId);
+                            }};
+                            return treeStructureRepository.save(TreeStructure.builder()
+                                    .id(springId)
+                                    .childrenIds(childIds)
+                                    .label(label)
+                                    .departmentId(departmentId)
+                                    .build());
+                        })
+                )
+                .then(
+                        Mono.just("Web Flux").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                                .id(webFluxId)
+                                .childrenIds(null)
+                                .label(label)
+                                .departmentId(departmentId)
+                                .build()))
+                )
+                .then(
+                        Mono.just("NodeJS").flatMap(label -> {
+                            List<String> childIds = new ArrayList<String>() {{
+                                add(angularId);
+                            }};
+                            return treeStructureRepository.save(TreeStructure.builder()
+                                    .id(nodeJsId)
+                                    .childrenIds(childIds)
+                                    .label(label)
+                                    .departmentId(departmentId)
+                                    .build());
+                        })
+                )
+                .then(
+                        Mono.just("Angular CLI").flatMap(label -> {
+                            List<String> childIds = new ArrayList<String>() {{
+                                add(typeScriptId);
+                                add(materialId);
+                            }};
+                            return treeStructureRepository.save(TreeStructure.builder()
+                                    .id(angularId)
+                                    .childrenIds(childIds)
+                                    .label(label)
+                                    .departmentId(departmentId)
+                                    .build());
+                        })
+                )
+                .then(
+                        Mono.just("TypeScript").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                                .id(typeScriptId)
+                                .childrenIds(null)
+                                .label(label)
+                                .departmentId(departmentId)
+                                .build()))
+                )
+                .then(
+                        Mono.just("Material").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                                .id(materialId)
+                                .childrenIds(null)
+                                .label(label)
+                                .departmentId(departmentId)
+                                .build()))
+                ).log().subscribe(value -> log.info("Completed: Seeding tree data..."));
     }
 
     private void seedTreeData2() {

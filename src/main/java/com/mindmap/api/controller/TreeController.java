@@ -5,6 +5,7 @@ import com.mindmap.api.model.TreeNode;
 import com.mindmap.api.service.TreeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,13 +30,14 @@ public class TreeController {
         this.treeService = treeService;
     }
 
-    @GetMapping("api/tree/{departmentId}")
+    @GetMapping("api/treex/{departmentId}")
     Mono<List<String>> getTree(@PathVariable String departmentId) {
         List<String> output = new ArrayList<>();
 
         List<Tree> nodes = treeService.findByDepartmentId(departmentId).collectList().block();
         nodes.forEach(node ->{
             output.addAll(getChildren(node));
+            childrenOutput.clear();
         });
 
         return Mono.just(output);
@@ -44,14 +46,20 @@ public class TreeController {
     private List<String> childrenOutput = new ArrayList<>();
     private String input = "";
     private List<String> getChildren(Tree node) {
+        if (!StringUtils.isEmpty(input)) {
+            input = input.concat("|").concat(node.label);
+        } else {
+            input = node.label;
+        }
         if (node.hasChildren) {
             for (Tree child : treeService.findByParentId(node.id).collectList().block()) {
-                input = input.concat(node.label.concat("!").concat(child.label));
                 getChildren(child);
             }
         }
 
-        childrenOutput.add(input);
+        if (!StringUtils.isEmpty(input)) {
+            childrenOutput.add(input);
+        }
         input = "";
         return childrenOutput;
     }
