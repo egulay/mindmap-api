@@ -71,6 +71,7 @@ public class DataSeeder {
                                     .id(mindMapId)
                                     .childrenIds(childIds)
                                     .label(label)
+                                    .votes(0)
                                     .departmentId(departmentId)
                                     .build());
                         })

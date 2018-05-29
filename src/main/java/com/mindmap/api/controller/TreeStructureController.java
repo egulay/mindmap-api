@@ -1,13 +1,14 @@
 package com.mindmap.api.controller;
 
+import com.mindmap.api.model.NewNode;
 import com.mindmap.api.model.TreeStructure;
 import com.mindmap.api.service.TreeStructureService;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import sun.reflect.generics.tree.Tree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,24 @@ public class TreeStructureController {
         createTree(root, result, "");
 
         return Mono.just(result);
+    }
+
+    @PostMapping(path = "api/tree/add", consumes = "application/json", produces = "application/json")
+    public Mono<String> saveRecord(@RequestBody NewNode node){
+
+        TreeStructure newNode = TreeStructure.builder()
+                .id(new ObjectId().toString())
+                .departmentId(node.getDepatrmentId())
+                .childrenIds(null)
+                .label(node.getLabel())
+                .build();
+        TreeStructure resultNewNode = this.treeStructureService.save(newNode).block();
+
+        TreeStructure parent = this.treeStructureService.findById(node.getParentId()).block();
+        parent.childrenIds.add(resultNewNode.getId());
+        TreeStructure result = this.treeStructureService.save(parent).block();
+
+        return Mono.just("OK");
     }
 
     private void createTree(TreeStructure parentElement, List<String> result, String partial) {
