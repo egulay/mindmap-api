@@ -146,7 +146,7 @@ public class DataSeeder {
                 .then(
                         Mono.just("Flexibility").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
                                 .id(flexibilityId)
-                                .childrenIds(null)/
+                                .childrenIds(null)
                                 .label(label)
                                 .departmentId(departmentId)
                                 .build()))
