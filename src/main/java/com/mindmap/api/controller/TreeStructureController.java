@@ -63,6 +63,15 @@ public class TreeStructureController {
         return getTree(node.getDepartmentId());
     }
 
+    @GetMapping("api/tree/vote/{departmentId}/{label}")
+    public Mono<TreeOutput> vote(@PathVariable String departmentId, @PathVariable String label){
+        TreeStructure votedNode = this.treeStructureService.findByLabelAndDepartmentId(label, departmentId).block();
+        votedNode.votes++;
+        this.treeStructureService.save(votedNode).block();
+
+        return getTree(departmentId);
+    }
+
     private void createTree(TreeStructure parentElement, List<String> result, String partial) {
         partial = partial.concat(parentElement.label).concat("|");
         if (parentElement.childrenIds != null) {
