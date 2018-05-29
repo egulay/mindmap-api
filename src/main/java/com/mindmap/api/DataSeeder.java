@@ -146,7 +146,7 @@ public class DataSeeder {
                 .then(
                         Mono.just("Flexibility").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
                                 .id(flexibilityId)
-                                .childrenIds(null)
+                                .childrenIds(null)/
                                 .label(label)
                                 .departmentId(departmentId)
                                 .build()))
@@ -343,12 +343,13 @@ public class DataSeeder {
                 .then(
                         Mono.just("Networking+Transparency").flatMap(label -> {
                             List<String> childIds = new ArrayList<String>() {{
-                                add(networkingId);
-                                add(agileId);
-                                add(focusId);
+                                add(expertId);
+                                add(rotations2Id);
+                                add(conferencesId);
+                                add(trainings2Id);
                             }};
                             return treeStructureRepository.save(TreeStructure.builder()
-                                    .id(timeId)
+                                    .id(networkingId)
                                     .childrenIds(childIds)
                                     .label(label)
                                     .departmentId(departmentId)
