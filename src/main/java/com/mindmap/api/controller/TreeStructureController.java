@@ -72,6 +72,13 @@ public class TreeStructureController {
         return getTree(departmentId);
     }
 
+    @GetMapping("api/tree/checkLabelExist/{departmentId}/{label}")
+    public Mono<Boolean> checkLabelExist(@PathVariable String label, @PathVariable String departmentId){
+        TreeStructure resultLabel = this.treeStructureService.findByLabelAndDepartmentId(label, departmentId).block();
+        if (resultLabel.getLabel()!=null && resultLabel.getLabel().equals(label)){ return Mono.just(Boolean.FALSE); }
+        else { return Mono.just(Boolean.TRUE); }
+    }
+
     private void createTree(TreeStructure parentElement, List<String> result, String partial) {
         partial = partial.concat(parentElement.label).concat("|");
         if (parentElement.childrenIds != null) {
