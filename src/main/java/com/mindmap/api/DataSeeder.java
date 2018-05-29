@@ -49,10 +49,21 @@ public class DataSeeder {
     }
 
     private void seedTreeData() {
-        String nodeJsId = new ObjectId().toString();
-        String javaId = new ObjectId().toString();
-        String angularId = new ObjectId().toString();
-        String materialId = new ObjectId().toString();
+        String timeId = new ObjectId().toString();
+        String mindsetId = new ObjectId().toString();
+        String environmentId = new ObjectId().toString();
+
+        //Time
+        String flexibilityId = new ObjectId().toString();
+        String agileId = new ObjectId().toString();
+        String focusId = new ObjectId().toString();
+//        String TimeId = new ObjectId().toString();
+
+        //Environment
+        String creativeRoomsId = new ObjectId().toString();
+        String prototypingId = new ObjectId().toString();
+        String recruitmentId = new ObjectId().toString();
+
         String typeScriptId = new ObjectId().toString();
         String springId = new ObjectId().toString();
         String webFluxId = new ObjectId().toString();
@@ -62,10 +73,11 @@ public class DataSeeder {
 
         treeStructureRepository.deleteAll()
                 .then(
-                        Mono.just("Mind Map").flatMap(label -> {
+                        Mono.just("Culture of Innovation").flatMap(label -> {
                             List<String> childIds = new ArrayList<String>() {{
-                                add(nodeJsId);
-                                add(javaId);
+                                add(timeId);
+//                                add(mindsetId);
+                                add(environmentId);
                             }};
                             return treeStructureRepository.save(TreeStructure.builder()
                                     .id(mindMapId)
@@ -76,12 +88,14 @@ public class DataSeeder {
                         })
                 )
                 .then(
-                        Mono.just("Java").flatMap(label -> {
+                        Mono.just("Time").flatMap(label -> {
                             List<String> childIds = new ArrayList<String>() {{
-                                add(springId);
+                                add(flexibilityId);
+                                add(agileId);
+                                add(focusId);
                             }};
                             return treeStructureRepository.save(TreeStructure.builder()
-                                    .id(javaId)
+                                    .id(timeId)
                                     .childrenIds(childIds)
                                     .label(label)
                                     .departmentId(departmentId)
@@ -89,39 +103,53 @@ public class DataSeeder {
                         })
                 )
                 .then(
-                        Mono.just("Spring MVC").flatMap(label -> {
-                            List<String> childIds = new ArrayList<String>() {{
-                                add(webFluxId);
-                            }};
-                            return treeStructureRepository.save(TreeStructure.builder()
-                                    .id(springId)
-                                    .childrenIds(childIds)
-                                    .label(label)
-                                    .departmentId(departmentId)
-                                    .build());
-                        })
-                )
-                .then(
-                        Mono.just("Web Flux").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
-                                .id(webFluxId)
+                        Mono.just("Flexibility").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                                .id(flexibilityId)
                                 .childrenIds(null)
                                 .label(label)
                                 .departmentId(departmentId)
                                 .build()))
                 )
                 .then(
-                        Mono.just("NodeJS").flatMap(label -> {
+                        Mono.just("W/out heavy processes / Agile").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                                .id(agileId)
+                                .childrenIds(null)
+                                .label(label)
+                                .departmentId(departmentId)
+                                .build()))
+                )
+                .then(
+                        Mono.just("Focus on get things done").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                                .id(focusId)
+                                .childrenIds(null)
+                                .label(label)
+                                .departmentId(departmentId)
+                                .build()))
+                )
+                .then(
+                        Mono.just("Environment").flatMap(label -> {
                             List<String> childIds = new ArrayList<String>() {{
-                                add(angularId);
+                                add(creativeRoomsId);
+//                                add(prototypingId);
+//                                add(recruitmentId);
+
                             }};
                             return treeStructureRepository.save(TreeStructure.builder()
-                                    .id(nodeJsId)
+                                    .id(environmentId)
                                     .childrenIds(childIds)
                                     .label(label)
                                     .departmentId(departmentId)
                                     .build());
                         })
                 )
+                .then(
+                        Mono.just("Creative Rooms").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                                .id(creativeRoomsId)
+                                .childrenIds(null)
+                                .label(label)
+                                .departmentId(departmentId)
+                                .build()))
+                )                /*
                 .then(
                         Mono.just("Angular CLI").flatMap(label -> {
                             List<String> childIds = new ArrayList<String>() {{
@@ -151,7 +179,9 @@ public class DataSeeder {
                                 .label(label)
                                 .departmentId(departmentId)
                                 .build()))
-                ).log().subscribe(value -> log.info("Completed: Seeding tree data..."));
+                )
+                */
+                .log().subscribe(value -> log.info("Completed: Seeding tree data..."));
     }
 
 
