@@ -24,6 +24,11 @@ public class TreeStructureServiceImpl implements TreeStructureService {
     }
 
     @Override
+    public Flux<TreeStructure> findAllByDepartmentId(String departmentId){
+        return treeStructureRepository.findAllByDepartmentId(departmentId);
+    }
+
+    @Override
     public Mono<TreeStructure> findById(String id) {
         return treeStructureRepository.findById(id);
     }
@@ -31,6 +36,10 @@ public class TreeStructureServiceImpl implements TreeStructureService {
     @Override
     public Mono<TreeStructure> findByLabelAndDepartmentId(String label, String departmentId) {
         return treeStructureRepository.findByLabelAndDepartmentId(label, departmentId);
+    }
+
+    public Mono<TreeStructure> save(TreeStructure record){
+        return treeStructureRepository.save(record);
     }
 
 }

@@ -1,15 +1,17 @@
 package com.mindmap.api.controller;
 
+import com.mindmap.api.model.NewNode;
+import com.mindmap.api.model.TreeOutput;
 import com.mindmap.api.model.TreeStructure;
 import com.mindmap.api.service.TreeStructureService;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -23,14 +25,39 @@ public class TreeStructureController {
     }
 
     @GetMapping("api/tree/{departmentId}")
-    Mono<List<String>> getTree(@PathVariable String departmentId) {
+    Mono<TreeOutput> getTree(@PathVariable String departmentId) {
         TreeStructure root = treeStructureService.findByLabelAndDepartmentId("Mind Map", departmentId).block();
 
-        List<String> result = new ArrayList<>();
+        List<String> treeNodes = new ArrayList<>();
+        Comparator<TreeStructure> comparator = Comparator.comparing(TreeStructure::getVotes);
+        String winner = treeStructureService.findAllByDepartmentId(departmentId).toStream().max(comparator).orElse(root).getLabel();
 
-        createTree(root, result, "");
+        createTree(root, treeNodes, "");
+
+        TreeOutput result = TreeOutput.builder()
+                .treeNodes(treeNodes)
+                .departmentId(departmentId)
+                .voteWinnerLabel(winner)
+                .build();
 
         return Mono.just(result);
+    }
+
+    @PostMapping(path = "api/tree/add", consumes = "application/json", produces = "application/json")
+    public Mono<String> saveRecord(@RequestBody NewNode node) {
+        TreeStructure newNode = TreeStructure.builder()
+                .id(new ObjectId().toString())
+                .departmentId(node.getDepartmentId())
+                .childrenIds(null)
+                .label(node.getLabel())
+                .build();
+        TreeStructure resultNewNode = this.treeStructureService.save(newNode).block();
+
+        TreeStructure parent = this.treeStructureService.findByLabelAndDepartmentId(node.getParentLabel(), node.getDepartmentId()).block();
+        parent.childrenIds.add(resultNewNode.getId());
+        this.treeStructureService.save(parent).block();
+
+        return Mono.just("OK");
     }
 
     private void createTree(TreeStructure parentElement, List<String> result, String partial) {
@@ -45,6 +72,4 @@ public class TreeStructureController {
             result.add(partial.substring(0, partial.length() - 1));
         }
     }
-
-
 }
