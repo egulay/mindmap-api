@@ -25,8 +25,8 @@ public class TreeStructureController {
     }
 
     @GetMapping("api/tree/{departmentId}")
-    Mono<TreeOutput> getTree(@PathVariable String departmentId) {
-        TreeStructure root = treeStructureService.findByLabelAndDepartmentId("Mind Map", departmentId).block();
+    private Mono<TreeOutput> getTree(@PathVariable String departmentId) {
+        TreeStructure root = treeStructureService.findByLabelAndDepartmentId("Culture of Innovation", departmentId).block();
 
         List<String> treeNodes = new ArrayList<>();
         Comparator<TreeStructure> comparator = Comparator.comparing(TreeStructure::getVotes);
@@ -44,7 +44,7 @@ public class TreeStructureController {
     }
 
     @PostMapping(path = "api/tree/add", consumes = "application/json", produces = "application/json")
-    public Mono<String> saveRecord(@RequestBody NewNode node) {
+    public Mono<TreeOutput> saveRecord(@RequestBody NewNode node) {
         TreeStructure newNode = TreeStructure.builder()
                 .id(new ObjectId().toString())
                 .departmentId(node.getDepartmentId())
@@ -54,10 +54,13 @@ public class TreeStructureController {
         TreeStructure resultNewNode = this.treeStructureService.save(newNode).block();
 
         TreeStructure parent = this.treeStructureService.findByLabelAndDepartmentId(node.getParentLabel(), node.getDepartmentId()).block();
+        if (parent.childrenIds == null){
+            parent.childrenIds = new ArrayList<>();
+        }
         parent.childrenIds.add(resultNewNode.getId());
         this.treeStructureService.save(parent).block();
 
-        return Mono.just("OK");
+        return getTree(node.getDepartmentId());
     }
 
     private void createTree(TreeStructure parentElement, List<String> result, String partial) {
