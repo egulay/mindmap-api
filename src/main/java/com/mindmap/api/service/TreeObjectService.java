@@ -8,4 +8,5 @@ public interface TreeObjectService {
     Flux<TreeObject> findAll();
 
     Mono<TreeObject> findByDepartmentId(String departmentId);
+
 }

@@ -3,14 +3,12 @@ package com.mindmap.api;
 import com.mindmap.api.model.Account;
 import com.mindmap.api.model.Department;
 import com.mindmap.api.model.Role;
+import com.mindmap.api.model.Tree;
 import com.mindmap.api.model.tree.Children;
 import com.mindmap.api.model.tree.Leaf;
 import com.mindmap.api.model.tree.NodeData;
 import com.mindmap.api.model.tree.TreeObject;
-import com.mindmap.api.repository.AccountRepository;
-import com.mindmap.api.repository.DepartmentRepository;
-import com.mindmap.api.repository.RoleRepository;
-import com.mindmap.api.repository.TreeObjectRepository;
+import com.mindmap.api.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,20 +32,127 @@ public class DataSeeder {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final TreeRepository treeRepository;
+
     @Autowired
     public DataSeeder(AccountRepository accountRepository
-            , RoleRepository roleRepository, DepartmentRepository departmentRepository, TreeObjectRepository treeObjectRepository, PasswordEncoder passwordEncoder) {
+            , RoleRepository roleRepository, DepartmentRepository departmentRepository, TreeObjectRepository treeObjectRepository, PasswordEncoder passwordEncoder, TreeRepository treeRepository) {
         this.accountRepository = accountRepository;
         this.roleRepository = roleRepository;
         this.departmentRepository = departmentRepository;
         this.treeObjectRepository = treeObjectRepository;
         this.passwordEncoder = passwordEncoder;
+        this.treeRepository = treeRepository;
     }
 
     @EventListener(value = ContextRefreshedEvent.class)
     public void seed() {
 //        seedUserData();
-        seedTreeData();
+        seedTreeData2();
+    }
+
+    private void seedTreeData2() {
+        log.info("Seeding tree data...");
+//        String expandedIcon = "fa-folder-open";
+//        String collapsedIcon = "fa-folder";
+//        String icon = "fa-file-word-o";
+
+        String departmentId = "5b0be222f3be1b388cdc8dfd";
+
+        String rootId = "-";
+        String nodeJsId = new ObjectId().toString();
+        String javaId = new ObjectId().toString();
+        String angularId = new ObjectId().toString();
+        String materialId = new ObjectId().toString();
+        String typeScriptId = new ObjectId().toString();
+        String springId = new ObjectId().toString();
+        String webFluxId = new ObjectId().toString();
+
+        treeRepository.deleteAll()
+                .then(
+                        Mono.just("NodeJs")
+                                .flatMap(label -> treeRepository.save(Tree.builder()
+                                        .id(nodeJsId)
+                                        .parentId(rootId)
+                                        .label(label)
+                                        .departmentId(departmentId)
+                                        .isLeaf(false)
+                                        .hasChildren(true)
+                                        .data("0").build()
+                                ))
+                )
+                .then(
+                        Mono.just("Java")
+                                .flatMap(label -> treeRepository.save(Tree.builder()
+                                        .id(javaId)
+                                        .parentId(rootId)
+                                        .label(label)
+                                        .isLeaf(false)
+                                        .hasChildren(true)
+                                        .departmentId(departmentId)
+                                        .data("0").build()
+                                ))
+                )
+                .then(
+                        Mono.just("Angular")
+                                .flatMap(label -> treeRepository.save(Tree.builder()
+                                        .id(angularId)
+                                        .parentId(nodeJsId)
+                                        .label(label)
+                                        .isLeaf(false)
+                                        .hasChildren(true)
+                                        .departmentId(departmentId)
+                                        .data("0").build()
+                                ))
+                )
+                .then(
+                        Mono.just("Spring MVC")
+                                .flatMap(label -> treeRepository.save(Tree.builder()
+                                        .id(springId)
+                                        .parentId(javaId)
+                                        .label(label)
+                                        .isLeaf(false)
+                                        .hasChildren(true)
+                                        .departmentId(departmentId)
+                                        .data("0").build()
+                                ))
+                )
+                .then(
+                        Mono.just("Material")
+                                .flatMap(label -> treeRepository.save(Tree.builder()
+                                        .id(materialId)
+                                        .parentId(angularId)
+                                        .label(label)
+                                        .isLeaf(true)
+                                        .hasChildren(false)
+                                        .departmentId(departmentId)
+                                        .data("0").build()
+                                ))
+                )
+                .then(
+                        Mono.just("TypeScript")
+                                .flatMap(label -> treeRepository.save(Tree.builder()
+                                        .id(typeScriptId)
+                                        .parentId(angularId)
+                                        .label(label)
+                                        .isLeaf(true)
+                                        .hasChildren(false)
+                                        .departmentId(departmentId)
+                                        .data("0").build()
+                                ))
+                )
+                .then(
+                        Mono.just("WebFlux")
+                                .flatMap(label -> treeRepository.save(Tree.builder()
+                                        .id(webFluxId)
+                                        .parentId(springId)
+                                        .label(label)
+                                        .isLeaf(true)
+                                        .hasChildren(false)
+                                        .departmentId(departmentId)
+                                        .data("0").build()
+                                ))
+                ).log().subscribe(value -> log.info("Completed: Seeding tree data..."));
     }
 
     private void seedTreeData() {

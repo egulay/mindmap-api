@@ -1,5 +1,6 @@
 package com.mindmap.api.service;
 
+import com.mindmap.api.model.tree.NodeData;
 import com.mindmap.api.model.tree.TreeObject;
 import com.mindmap.api.repository.TreeObjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;

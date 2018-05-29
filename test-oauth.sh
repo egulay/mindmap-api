@@ -17,22 +17,22 @@ export PATH=$PATH:/c/Users/emreg/AppData/Local/Programs/Python/Python36
 prop='access_token'
 token=`jsonval`
 
-echo ''
-echo '------ FULL RESPONSE ------'
-echo ${json} | python -m json.tool
-echo '------ FULL RESPONSE ------'
-echo ''
-
-echo ''
-echo '------ ACCESS TOKEN ------'
-echo ${token}
-echo '------ ACCESS TOKEN ------'
-echo ''
-echo '------ GET ALL USERS ------'
-curl -H "Authorization: Bearer ${token}" -X GET http://localhost:8080/api/user/list/ | python -m json.tool
-echo '------ GET ALL USERS ------'
+#echo ''
+#echo '------ FULL RESPONSE ------'
+#echo ${json} | python -m json.tool
+#echo '------ FULL RESPONSE ------'
+#echo ''
+#
+#echo ''
+#echo '------ ACCESS TOKEN ------'
+#echo ${token}
+#echo '------ ACCESS TOKEN ------'
+#echo ''
+#echo '------ GET ALL USERS ------'
+#curl -H "Authorization: Bearer ${token}" -X GET http://localhost:8080/api/user/list/ | python -m json.tool
+#echo '------ GET ALL USERS ------'
 
 echo ''
 echo '------ GET TREE------'
-curl -H "Authorization: Bearer ${token}" -X GET http://localhost:8080/api/node/getTree/5b0be222f3be1b388cdc8dfd | python -m json.tool
+curl -H "Authorization: Bearer ${token}" -X GET http://localhost:8080/api/tree/5b0be222f3be1b388cdc8dfd | python -m json.tool
 echo '------ GET TREE ------'
