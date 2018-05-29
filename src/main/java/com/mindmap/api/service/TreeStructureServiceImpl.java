@@ -33,4 +33,8 @@ public class TreeStructureServiceImpl implements TreeStructureService {
         return treeStructureRepository.findByLabelAndDepartmentId(label, departmentId);
     }
 
+    public Mono<TreeStructure> save(TreeStructure record){
+        return treeStructureRepository.save(record);
+    }
+
 }

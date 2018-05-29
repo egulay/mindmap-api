@@ -12,4 +12,6 @@ public interface TreeStructureService {
     Mono<TreeStructure> findById(String id);
 
     Mono<TreeStructure> findByLabelAndDepartmentId(String label, String departmentId);
+
+    Mono<TreeStructure> save(TreeStructure record);
 }
