@@ -8,7 +8,6 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-import sun.reflect.generics.tree.Tree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,19 +34,18 @@ public class TreeStructureController {
     }
 
     @PostMapping(path = "api/tree/add", consumes = "application/json", produces = "application/json")
-    public Mono<String> saveRecord(@RequestBody NewNode node){
-
+    public Mono<String> saveRecord(@RequestBody NewNode node) {
         TreeStructure newNode = TreeStructure.builder()
                 .id(new ObjectId().toString())
-                .departmentId(node.getDepatrmentId())
+                .departmentId(node.getDepartmentId())
                 .childrenIds(null)
                 .label(node.getLabel())
                 .build();
         TreeStructure resultNewNode = this.treeStructureService.save(newNode).block();
 
-        TreeStructure parent = this.treeStructureService.findById(node.getParentId()).block();
+        TreeStructure parent = this.treeStructureService.findByLabelAndDepartmentId(node.getParentLabel(), node.getDepartmentId()).block();
         parent.childrenIds.add(resultNewNode.getId());
-        TreeStructure result = this.treeStructureService.save(parent).block();
+        this.treeStructureService.save(parent).block();
 
         return Mono.just("OK");
     }

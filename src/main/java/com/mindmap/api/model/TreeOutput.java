@@ -14,6 +14,6 @@ import java.util.List;
 @Builder
 public class TreeOutput {
     private List<String> treeNodes;
-    private String depatrmentId;
+    private String departmentId;
     private String voteWinnerLabel;
 }

@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class NewNode {
-    String depatrmentId;
+    String departmentId;
     String label;
-    String parentId;
+    String parentLabel;
 }
