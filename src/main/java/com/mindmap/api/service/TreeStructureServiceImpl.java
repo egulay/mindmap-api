@@ -24,6 +24,11 @@ public class TreeStructureServiceImpl implements TreeStructureService {
     }
 
     @Override
+    public Flux<TreeStructure> findAllByDepartmentId(String departmentId){
+        return treeStructureRepository.findAllByDepartmentId(departmentId);
+    }
+
+    @Override
     public Mono<TreeStructure> findById(String id) {
         return treeStructureRepository.findById(id);
     }

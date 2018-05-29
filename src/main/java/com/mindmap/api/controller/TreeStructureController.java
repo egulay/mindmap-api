@@ -1,6 +1,7 @@
 package com.mindmap.api.controller;
 
 import com.mindmap.api.model.NewNode;
+import com.mindmap.api.model.TreeOutput;
 import com.mindmap.api.model.TreeStructure;
 import com.mindmap.api.service.TreeStructureService;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -23,12 +25,20 @@ public class TreeStructureController {
     }
 
     @GetMapping("api/tree/{departmentId}")
-    Mono<List<String>> getTree(@PathVariable String departmentId) {
+    Mono<TreeOutput> getTree(@PathVariable String departmentId) {
         TreeStructure root = treeStructureService.findByLabelAndDepartmentId("Mind Map", departmentId).block();
 
-        List<String> result = new ArrayList<>();
+        List<String> treeNodes = new ArrayList<>();
+        Comparator<TreeStructure> comparator = Comparator.comparing(TreeStructure::getVotes);
+        String winner = treeStructureService.findAllByDepartmentId(departmentId).toStream().max(comparator).orElse(root).getLabel();
 
-        createTree(root, result, "");
+        createTree(root, treeNodes, "");
+
+        TreeOutput result = TreeOutput.builder()
+                .treeNodes(treeNodes)
+                .departmentId(departmentId)
+                .voteWinnerLabel(winner)
+                .build();
 
         return Mono.just(result);
     }
@@ -62,6 +72,4 @@ public class TreeStructureController {
             result.add(partial.substring(0, partial.length() - 1));
         }
     }
-
-
 }

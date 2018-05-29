@@ -20,5 +20,6 @@ public class TreeStructure {
     public String departmentId;
     public List<String> childrenIds;
     public String label;
-    public int votes;
+    @Builder.Default
+    public int votes = 0;
 }
