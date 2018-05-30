@@ -52,14 +52,18 @@ public class TreeStructureController {
         if(checkWinersSum >= checkAllThreshold){
             winners.setWinnersLvlOne(null);
         }
-        winners.allWinners.addAll(winners.getWinnersLvlOne());
+        if (winners.getWinnersLvlOne() !=null) {
+            winners.allWinners.addAll(winners.getWinnersLvlOne());
+        }
         if(uniqueVotes.size() > 1) {
             winners.setWinnersLvlTwo(results.toStream().filter(f -> f.getVotes() == uniqueVotes.get(1)).map(TreeStructure::getLabel).collect(Collectors.toList()));
             checkWinersSum += winners.getWinnersLvlTwo().size();
             if (checkWinersSum >= checkAllThreshold) {
                 winners.setWinnersLvlTwo(null);
             }
-            winners.allWinners.addAll(winners.getWinnersLvlTwo());
+            if (winners.getWinnersLvlTwo() !=null) {
+                winners.allWinners.addAll(winners.getWinnersLvlTwo());
+            }
         }
         if(uniqueVotes.size() > 2) {
             winners.setWinnersLvlThree(results.toStream().filter(f -> f.getVotes() == uniqueVotes.get(2)).map(TreeStructure::getLabel).collect(Collectors.toList()));
@@ -67,7 +71,9 @@ public class TreeStructureController {
             if (checkWinersSum >= checkAllThreshold) {
                 winners.setWinnersLvlThree(null);
             }
-            winners.allWinners.addAll(winners.getWinnersLvlThree());
+            if (winners.getWinnersLvlThree() !=null) {
+                winners.allWinners.addAll(winners.getWinnersLvlThree());
+            }
         }
         if(uniqueVotes.size() > 3) {
             winners.setWinnersLvlFour(results.toStream().filter(f -> f.getVotes() == uniqueVotes.get(3)).map(TreeStructure::getLabel).collect(Collectors.toList()));
@@ -75,7 +81,9 @@ public class TreeStructureController {
             if (checkWinersSum >= checkAllThreshold) {
                 winners.setWinnersLvlFour(null);
             }
-            winners.allWinners.addAll(winners.getWinnersLvlFour());
+            if (winners.getWinnersLvlFour() !=null) {
+                winners.allWinners.addAll(winners.getWinnersLvlFour());
+            }
         }
         if(uniqueVotes.size() > 4) {
             winners.setWinnersLvlFive(results.toStream().filter(f -> f.getVotes() == uniqueVotes.get(4)).map(TreeStructure::getLabel).collect(Collectors.toList()));
@@ -83,7 +91,9 @@ public class TreeStructureController {
             if (checkWinersSum >= checkAllThreshold) {
                 winners.setWinnersLvlFive(null);
             }
-            winners.allWinners.addAll(winners.getWinnersLvlFive());
+            if (winners.getWinnersLvlFive() !=null) {
+                winners.allWinners.addAll(winners.getWinnersLvlFive());
+            }
         }
         createTree(root, treeNodes, "");
 
