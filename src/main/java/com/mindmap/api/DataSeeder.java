@@ -176,7 +176,7 @@ public class DataSeeder {
                                 add(agile2Id);
                                 add(openmindedId);
                                 add(takingRiskId);
-//                                add(emotionalId);
+                                add(emotionalId);
                                 add(thinkingId);
                             }};
                             return treeStructureRepository.save(TreeStructure.builder()
@@ -195,14 +195,14 @@ public class DataSeeder {
                                 .departmentId(departmentId)
                                 .build()))
                 )
-/*                .then(
+                .then(
                         Mono.just("Emotional safety").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
                                 .id(emotionalId)
                                 .childrenIds(null)
                                 .label(label)
                                 .departmentId(departmentId)
                                 .build()))
-                )*/
+                )
                 .then(
                         Mono.just("Agile").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
                                 .id(agile2Id)
@@ -434,7 +434,7 @@ public class DataSeeder {
                                 .build()))
                 )
                 .then(
-                        Mono.just("Emotional safety").flatMap(label -> {
+                        Mono.just("Open doors").flatMap(label -> {
                             List<String> childIds = new ArrayList<String>() {{
                                 add(colleaguesId);
                                 add(managementId);
