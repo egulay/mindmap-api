@@ -106,7 +106,6 @@ public class DataSeeder {
         //Fun
         String funId = new ObjectId().toString();
 
-
         String mindMapId = new ObjectId().toString();
 
         String departmentId = "5b0be222f3be1b388cdc8dfd";

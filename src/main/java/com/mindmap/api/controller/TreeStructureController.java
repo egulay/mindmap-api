@@ -100,7 +100,7 @@ public class TreeStructureController {
         TreeStructure resultNewNode = this.treeStructureService.save(newNode).block();
 
         TreeStructure parent = this.treeStructureService.findByLabelAndDepartmentId(node.getParentLabel(), node.getDepartmentId()).block();
-        if (parent.childrenIds == null){
+        if (parent.childrenIds == null) {
             parent.childrenIds = new ArrayList<>();
         }
         parent.childrenIds.add(resultNewNode.getId());
@@ -110,7 +110,7 @@ public class TreeStructureController {
     }
 
     @GetMapping("api/tree/vote/{departmentId}/{label}")
-    public Mono<TreeOutput> vote(@PathVariable String departmentId, @PathVariable String label){
+    public Mono<TreeOutput> vote(@PathVariable String departmentId, @PathVariable String label) {
         TreeStructure votedNode = this.treeStructureService.findByLabelAndDepartmentId(label, departmentId).block();
         votedNode.votes++;
         this.treeStructureService.save(votedNode).block();
@@ -119,10 +119,16 @@ public class TreeStructureController {
     }
 
     @GetMapping("api/tree/checkLabelExist/{departmentId}/{label}")
-    public Mono<Boolean> checkLabelExist(@PathVariable String label, @PathVariable String departmentId){
+    public Mono<Boolean> checkLabelExist(@PathVariable String label, @PathVariable String departmentId) {
         TreeStructure resultLabel = this.treeStructureService.findByLabelAndDepartmentId(label, departmentId).block();
-        if (resultLabel.getLabel()!=null && resultLabel.getLabel().equals(label)){ return Mono.just(Boolean.FALSE); }
-        else { return Mono.just(Boolean.TRUE); }
+        if (resultLabel == null){
+            return Mono.just(Boolean.FALSE);
+        }
+        if (resultLabel.getLabel() != null && resultLabel.getLabel().equals(label)) {
+            return Mono.just(Boolean.TRUE);
+        } else {
+            return Mono.just(Boolean.FALSE);
+        }
     }
 
     private void createTree(TreeStructure parentElement, List<String> result, String partial) {
