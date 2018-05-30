@@ -37,6 +37,7 @@ public class TreeStructureController {
 
         Comparator<TreeStructure> compareWinners = Comparator.comparing(TreeStructure::getVotes).reversed();
         List<Integer> uniqueVotes = results.toStream().sorted(compareWinners).map(TreeStructure::getVotes).distinct().collect(Collectors.toList());
+        int allVotes = results.toStream().mapToInt(i -> i.getVotes()).sum();
 
         Winners winners = new Winners();
         winners.allWinners = new ArrayList<>();
@@ -44,18 +45,18 @@ public class TreeStructureController {
         int checkAllThreshold = results.count().block().intValue()/2;
         int checkWinersSum = 0;
 
-        checkWinersSum += getCheckWinersSum(results, uniqueVotes, winners, checkAllThreshold, 0, checkWinersSum);
+        checkWinersSum += getCheckWinersSum(results, uniqueVotes, winners, checkAllThreshold, 0, checkWinersSum, allVotes);
         if(uniqueVotes.size() > 1) {
-            checkWinersSum += getCheckWinersSum(results, uniqueVotes, winners, checkAllThreshold, 1, checkWinersSum);
+            checkWinersSum += getCheckWinersSum(results, uniqueVotes, winners, checkAllThreshold, 1, checkWinersSum, allVotes);
         }
         if(uniqueVotes.size() > 2) {
-            checkWinersSum += getCheckWinersSum(results, uniqueVotes, winners, checkAllThreshold, 2, checkWinersSum);
+            checkWinersSum += getCheckWinersSum(results, uniqueVotes, winners, checkAllThreshold, 2, checkWinersSum, allVotes);
         }
         if(uniqueVotes.size() > 3) {
-            checkWinersSum += getCheckWinersSum(results, uniqueVotes, winners, checkAllThreshold, 3, checkWinersSum);
+            checkWinersSum += getCheckWinersSum(results, uniqueVotes, winners, checkAllThreshold, 3, checkWinersSum, allVotes);
         }
         if(uniqueVotes.size() > 4) {
-            checkWinersSum += getCheckWinersSum(results, uniqueVotes, winners, checkAllThreshold, 4, checkWinersSum);
+            checkWinersSum += getCheckWinersSum(results, uniqueVotes, winners, checkAllThreshold, 4, checkWinersSum, allVotes);
         }
 
         createTree(root, treeNodes, "");
@@ -70,26 +71,38 @@ public class TreeStructureController {
         return Mono.just(result);
     }
 
-    private int getCheckWinersSum(Flux<TreeStructure> results, List<Integer> uniqueVotes, Winners winners, int checkAllThreshold, int id, int checkWinersSum) {
+    private int getCheckWinersSum(Flux<TreeStructure> results, List<Integer> uniqueVotes, Winners winners, int checkAllThreshold, int id, int checkWinersSum, int allVotes) {
         List<String> listRes = results.toStream().filter(f -> f.getVotes() == uniqueVotes.get(id)).map(TreeStructure::getLabel).collect(Collectors.toList());
+        double votesCount = results.toStream().filter(f -> f.getVotes() == uniqueVotes.get(id)).mapToDouble(i -> i.getVotes()).sum();
+        String votesPercentage;
+        if(allVotes > 0) {
+            votesPercentage = String.valueOf((double)Math.round(votesCount / allVotes * 100 * 100)/100).concat("%");
+        } else {
+            votesPercentage = null;
+        }
         checkWinersSum += listRes.size();
         if(checkWinersSum >= checkAllThreshold){
             return checkWinersSum;
         }
         switch (id){
             case 0:
+                winners.setPercentOne(votesPercentage);
                 winners.setWinnersLvlOne(listRes);
                 break;
             case 1:
+                winners.setPercentTwo(votesPercentage);
                 winners.setWinnersLvlTwo(listRes);
                 break;
             case 2:
+                winners.setPercentThree(votesPercentage);
                 winners.setWinnersLvlThree(listRes);
                 break;
             case 3:
+                winners.setPercentFour(votesPercentage);
                 winners.setWinnersLvlFour(listRes);
                 break;
             case 4:
+                winners.setPercentFive(votesPercentage);
                 winners.setWinnersLvlFive(listRes);
                 break;
             default:

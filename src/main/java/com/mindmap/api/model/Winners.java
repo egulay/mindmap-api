@@ -18,4 +18,10 @@ public class Winners {
     private List<String> winnersLvlFour;
     private List<String> winnersLvlFive;
     public List<String> allWinners;
+
+    public String percentOne;
+    public String percentTwo;
+    public String percentThree;
+    public String percentFour;
+    public String percentFive;
 }
