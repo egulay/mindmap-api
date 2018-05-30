@@ -312,7 +312,7 @@ public class DataSeeder {
                                 .build()))
                 )
                 .then(
-                        Mono.just("Trainings").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                        Mono.just("Skills Trainings").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
                                 .id(trainingsId)
                                 .childrenIds(null)
                                 .label(label)
@@ -493,7 +493,7 @@ public class DataSeeder {
                                 .build()))
                 )
                 .then(
-                        Mono.just("Benefit (extra training etc.)").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                        Mono.just("Benefit like extra training etc.").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
                                 .id(benefiId)
                                 .childrenIds(null)
                                 .label(label)
