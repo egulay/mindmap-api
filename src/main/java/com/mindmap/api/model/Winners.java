@@ -17,4 +17,5 @@ public class Winners {
     private List<String> winnersLvlThree;
     private List<String> winnersLvlFour;
     private List<String> winnersLvlFive;
+    public List<String> allWinners;
 }

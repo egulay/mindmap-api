@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import sun.reflect.generics.tree.Tree;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -41,40 +42,48 @@ public class TreeStructureController {
         List<Integer> uniqueVotes = results.toStream().sorted(compareWinners).map(TreeStructure::getVotes).distinct().collect(Collectors.toList());
 
         Winners winners = new Winners();
+        winners.allWinners = new ArrayList<>();
 
         int checkAllThreshold = results.count().block().intValue()/2;
-        int checkWinersSum = 0;
+        int checkWinersSum;
 
-        if (uniqueVotes.size() >= 3) {
-            winners.setWinnersLvlOne(results.toStream().filter(f -> f.getVotes() == uniqueVotes.get(0)).map(TreeStructure::getLabel).collect(Collectors.toList()));
-            checkWinersSum = winners.getWinnersLvlOne().size();
-            if(checkWinersSum >= checkAllThreshold){
-                winners.setWinnersLvlOne(null);
-            }
+        winners.setWinnersLvlOne(results.toStream().filter(f -> f.getVotes() == uniqueVotes.get(0)).map(TreeStructure::getLabel).collect(Collectors.toList()));
+        checkWinersSum = winners.getWinnersLvlOne().size();
+        if(checkWinersSum >= checkAllThreshold){
+            winners.setWinnersLvlOne(null);
+        }
+        winners.allWinners.addAll(winners.getWinnersLvlOne());
+        if(uniqueVotes.size() > 1) {
             winners.setWinnersLvlTwo(results.toStream().filter(f -> f.getVotes() == uniqueVotes.get(1)).map(TreeStructure::getLabel).collect(Collectors.toList()));
             checkWinersSum += winners.getWinnersLvlTwo().size();
-            if(checkWinersSum >= checkAllThreshold){
+            if (checkWinersSum >= checkAllThreshold) {
                 winners.setWinnersLvlTwo(null);
             }
+            winners.allWinners.addAll(winners.getWinnersLvlTwo());
+        }
+        if(uniqueVotes.size() > 2) {
             winners.setWinnersLvlThree(results.toStream().filter(f -> f.getVotes() == uniqueVotes.get(2)).map(TreeStructure::getLabel).collect(Collectors.toList()));
             checkWinersSum += winners.getWinnersLvlThree().size();
-            if(checkWinersSum >= checkAllThreshold){
+            if (checkWinersSum >= checkAllThreshold) {
                 winners.setWinnersLvlThree(null);
             }
+            winners.allWinners.addAll(winners.getWinnersLvlThree());
         }
-        if (uniqueVotes.size() >= 4) {
+        if(uniqueVotes.size() > 3) {
             winners.setWinnersLvlFour(results.toStream().filter(f -> f.getVotes() == uniqueVotes.get(3)).map(TreeStructure::getLabel).collect(Collectors.toList()));
             checkWinersSum += winners.getWinnersLvlFour().size();
-            if(checkWinersSum >= checkAllThreshold){
+            if (checkWinersSum >= checkAllThreshold) {
                 winners.setWinnersLvlFour(null);
             }
+            winners.allWinners.addAll(winners.getWinnersLvlFour());
         }
-        if (uniqueVotes.size() >= 5) {
+        if(uniqueVotes.size() > 4) {
             winners.setWinnersLvlFive(results.toStream().filter(f -> f.getVotes() == uniqueVotes.get(4)).map(TreeStructure::getLabel).collect(Collectors.toList()));
             checkWinersSum += winners.getWinnersLvlFive().size();
-            if(checkWinersSum >= checkAllThreshold){
+            if (checkWinersSum >= checkAllThreshold) {
                 winners.setWinnersLvlFive(null);
             }
+            winners.allWinners.addAll(winners.getWinnersLvlFive());
         }
         createTree(root, treeNodes, "");
 
