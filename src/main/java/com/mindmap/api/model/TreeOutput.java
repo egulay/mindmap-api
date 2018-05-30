@@ -15,4 +15,6 @@ public class TreeOutput {
     private List<String> treeNodes;
     private String departmentId;
     private String voteWinnerLabel;
+
+    private Winners winners;
 }

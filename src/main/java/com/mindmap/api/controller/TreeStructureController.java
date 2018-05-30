@@ -3,16 +3,20 @@ package com.mindmap.api.controller;
 import com.mindmap.api.model.NewNode;
 import com.mindmap.api.model.TreeOutput;
 import com.mindmap.api.model.TreeStructure;
+import com.mindmap.api.model.Winners;
 import com.mindmap.api.service.TreeStructureService;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import sun.reflect.generics.tree.Tree;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
@@ -29,15 +33,57 @@ public class TreeStructureController {
         TreeStructure root = treeStructureService.findByLabelAndDepartmentId("Culture of Innovation", departmentId).block();
 
         List<String> treeNodes = new ArrayList<>();
-        Comparator<TreeStructure> comparator = Comparator.comparing(TreeStructure::getVotes);
-        String winner = treeStructureService.findAllByDepartmentId(departmentId).toStream().max(comparator).orElse(root).getLabel();
+        Flux<TreeStructure> results = treeStructureService.findAllByDepartmentId(departmentId);
 
+        Comparator<TreeStructure> comparator = Comparator.comparing(TreeStructure::getVotes);
+        String winner = results.toStream().max(comparator).orElse(root).getLabel();
+
+        Comparator<TreeStructure> compareWinners = Comparator.comparing(TreeStructure::getVotes).reversed();
+        List<Integer> uniqueVotes = results.toStream().sorted(compareWinners).map(TreeStructure::getVotes).distinct().collect(Collectors.toList());
+
+        Winners winners = new Winners();
+
+        int checkAllThreshold = results.count().block().intValue()/2;
+        int checkWinersSum = 0;
+
+        if (uniqueVotes.size() >= 3) {
+            winners.setWinnersLvlOne(results.toStream().filter(f -> f.getVotes() == uniqueVotes.get(0)).map(TreeStructure::getLabel).collect(Collectors.toList()));
+            checkWinersSum = winners.getWinnersLvlOne().size();
+            if(checkWinersSum >= checkAllThreshold){
+                winners.setWinnersLvlOne(null);
+            }
+            winners.setWinnersLvlTwo(results.toStream().filter(f -> f.getVotes() == uniqueVotes.get(1)).map(TreeStructure::getLabel).collect(Collectors.toList()));
+            checkWinersSum += winners.getWinnersLvlTwo().size();
+            if(checkWinersSum >= checkAllThreshold){
+                winners.setWinnersLvlTwo(null);
+            }
+            winners.setWinnersLvlThree(results.toStream().filter(f -> f.getVotes() == uniqueVotes.get(2)).map(TreeStructure::getLabel).collect(Collectors.toList()));
+            checkWinersSum += winners.getWinnersLvlThree().size();
+            if(checkWinersSum >= checkAllThreshold){
+                winners.setWinnersLvlThree(null);
+            }
+        }
+        if (uniqueVotes.size() >= 4) {
+            winners.setWinnersLvlFour(results.toStream().filter(f -> f.getVotes() == uniqueVotes.get(3)).map(TreeStructure::getLabel).collect(Collectors.toList()));
+            checkWinersSum += winners.getWinnersLvlFour().size();
+            if(checkWinersSum >= checkAllThreshold){
+                winners.setWinnersLvlFour(null);
+            }
+        }
+        if (uniqueVotes.size() >= 5) {
+            winners.setWinnersLvlFive(results.toStream().filter(f -> f.getVotes() == uniqueVotes.get(4)).map(TreeStructure::getLabel).collect(Collectors.toList()));
+            checkWinersSum += winners.getWinnersLvlFive().size();
+            if(checkWinersSum >= checkAllThreshold){
+                winners.setWinnersLvlFive(null);
+            }
+        }
         createTree(root, treeNodes, "");
 
         TreeOutput result = TreeOutput.builder()
                 .treeNodes(treeNodes)
                 .departmentId(departmentId)
                 .voteWinnerLabel(winner)
+                .winners(winners)
                 .build();
 
         return Mono.just(result);
