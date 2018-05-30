@@ -14,7 +14,7 @@ import java.util.List;
 public class TreeOutput {
     private List<String> treeNodes;
     private String departmentId;
-    private String voteWinnerLabel;
+    private String rootLabel;
 
     private Winners winners;
 }

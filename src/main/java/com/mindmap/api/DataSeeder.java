@@ -8,6 +8,7 @@ import com.mindmap.api.repository.AccountRepository;
 import com.mindmap.api.repository.DepartmentRepository;
 import com.mindmap.api.repository.RoleRepository;
 import com.mindmap.api.repository.TreeStructureRepository;
+import com.mindmap.api.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,7 +113,7 @@ public class DataSeeder {
 
         treeStructureRepository.deleteAll()
                 .then(
-                        Mono.just("Culture of Innovation").flatMap(label -> {
+                        Mono.just(new Constants().ROOT_LABEL).flatMap(label -> {
                             List<String> childIds = new ArrayList<String>() {{
                                 add(timeId);
                                 add(mindsetId);

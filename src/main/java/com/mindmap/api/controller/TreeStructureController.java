@@ -5,6 +5,7 @@ import com.mindmap.api.model.TreeOutput;
 import com.mindmap.api.model.TreeStructure;
 import com.mindmap.api.model.Winners;
 import com.mindmap.api.service.TreeStructureService;
+import com.mindmap.api.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +31,10 @@ public class TreeStructureController {
 
     @GetMapping("api/tree/{departmentId}")
     private Mono<TreeOutput> getTree(@PathVariable String departmentId) {
-        TreeStructure root = treeStructureService.findByLabelAndDepartmentId("Culture of Innovation", departmentId).block();
+        TreeStructure root = treeStructureService.findByLabelAndDepartmentId(new Constants().ROOT_LABEL, departmentId).block();
 
         List<String> treeNodes = new ArrayList<>();
         Flux<TreeStructure> results = treeStructureService.findAllByDepartmentId(departmentId);
-
-        Comparator<TreeStructure> comparator = Comparator.comparing(TreeStructure::getVotes);
-        String winner = results.toStream().max(comparator).orElse(root).getLabel();
 
         Comparator<TreeStructure> compareWinners = Comparator.comparing(TreeStructure::getVotes).reversed();
         List<Integer> uniqueVotes = results.toStream().sorted(compareWinners).map(TreeStructure::getVotes).distinct().collect(Collectors.toList());
@@ -45,66 +43,63 @@ public class TreeStructureController {
         winners.allWinners = new ArrayList<>();
 
         int checkAllThreshold = results.count().block().intValue()/2;
-        int checkWinersSum;
+        int checkWinersSum = 0;
 
-        winners.setWinnersLvlOne(results.toStream().filter(f -> f.getVotes() == uniqueVotes.get(0)).map(TreeStructure::getLabel).collect(Collectors.toList()));
-        checkWinersSum = winners.getWinnersLvlOne().size();
-        if(checkWinersSum >= checkAllThreshold){
-            winners.setWinnersLvlOne(null);
-        }
-        if (winners.getWinnersLvlOne() !=null) {
-            winners.allWinners.addAll(winners.getWinnersLvlOne());
-        }
+        checkWinersSum += getCheckWinersSum(results, uniqueVotes, winners, checkAllThreshold, 0, checkWinersSum);
         if(uniqueVotes.size() > 1) {
-            winners.setWinnersLvlTwo(results.toStream().filter(f -> f.getVotes() == uniqueVotes.get(1)).map(TreeStructure::getLabel).collect(Collectors.toList()));
-            checkWinersSum += winners.getWinnersLvlTwo().size();
-            if (checkWinersSum >= checkAllThreshold) {
-                winners.setWinnersLvlTwo(null);
-            }
-            if (winners.getWinnersLvlTwo() !=null) {
-                winners.allWinners.addAll(winners.getWinnersLvlTwo());
-            }
+            checkWinersSum += getCheckWinersSum(results, uniqueVotes, winners, checkAllThreshold, 1, checkWinersSum);
         }
         if(uniqueVotes.size() > 2) {
-            winners.setWinnersLvlThree(results.toStream().filter(f -> f.getVotes() == uniqueVotes.get(2)).map(TreeStructure::getLabel).collect(Collectors.toList()));
-            checkWinersSum += winners.getWinnersLvlThree().size();
-            if (checkWinersSum >= checkAllThreshold) {
-                winners.setWinnersLvlThree(null);
-            }
-            if (winners.getWinnersLvlThree() !=null) {
-                winners.allWinners.addAll(winners.getWinnersLvlThree());
-            }
+            checkWinersSum += getCheckWinersSum(results, uniqueVotes, winners, checkAllThreshold, 2, checkWinersSum);
         }
         if(uniqueVotes.size() > 3) {
-            winners.setWinnersLvlFour(results.toStream().filter(f -> f.getVotes() == uniqueVotes.get(3)).map(TreeStructure::getLabel).collect(Collectors.toList()));
-            checkWinersSum += winners.getWinnersLvlFour().size();
-            if (checkWinersSum >= checkAllThreshold) {
-                winners.setWinnersLvlFour(null);
-            }
-            if (winners.getWinnersLvlFour() !=null) {
-                winners.allWinners.addAll(winners.getWinnersLvlFour());
-            }
+            checkWinersSum += getCheckWinersSum(results, uniqueVotes, winners, checkAllThreshold, 3, checkWinersSum);
         }
         if(uniqueVotes.size() > 4) {
-            winners.setWinnersLvlFive(results.toStream().filter(f -> f.getVotes() == uniqueVotes.get(4)).map(TreeStructure::getLabel).collect(Collectors.toList()));
-            checkWinersSum += winners.getWinnersLvlFive().size();
-            if (checkWinersSum >= checkAllThreshold) {
-                winners.setWinnersLvlFive(null);
-            }
-            if (winners.getWinnersLvlFive() !=null) {
-                winners.allWinners.addAll(winners.getWinnersLvlFive());
-            }
+            checkWinersSum += getCheckWinersSum(results, uniqueVotes, winners, checkAllThreshold, 4, checkWinersSum);
         }
+
         createTree(root, treeNodes, "");
 
         TreeOutput result = TreeOutput.builder()
                 .treeNodes(treeNodes)
                 .departmentId(departmentId)
-                .voteWinnerLabel(winner)
+                .rootLabel(new Constants().ROOT_LABEL)
                 .winners(winners)
                 .build();
 
         return Mono.just(result);
+    }
+
+    private int getCheckWinersSum(Flux<TreeStructure> results, List<Integer> uniqueVotes, Winners winners, int checkAllThreshold, int id, int checkWinersSum) {
+        List<String> listRes = results.toStream().filter(f -> f.getVotes() == uniqueVotes.get(id)).map(TreeStructure::getLabel).collect(Collectors.toList());
+        checkWinersSum += listRes.size();
+        if(checkWinersSum >= checkAllThreshold){
+            return checkWinersSum;
+        }
+        switch (id){
+            case 0:
+                winners.setWinnersLvlOne(listRes);
+                break;
+            case 1:
+                winners.setWinnersLvlTwo(listRes);
+                break;
+            case 2:
+                winners.setWinnersLvlThree(listRes);
+                break;
+            case 3:
+                winners.setWinnersLvlFour(listRes);
+                break;
+            case 4:
+                winners.setWinnersLvlFive(listRes);
+                break;
+            default:
+                break;
+        }
+        if (listRes !=null) {
+            winners.allWinners.addAll(listRes);
+        }
+        return checkWinersSum;
     }
 
     @PostMapping(path = "api/tree/add", consumes = "application/json", produces = "application/json")
