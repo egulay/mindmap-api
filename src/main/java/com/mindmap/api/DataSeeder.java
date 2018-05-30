@@ -154,7 +154,7 @@ public class DataSeeder {
                                 .build()))
                 )
                 .then(
-                        Mono.just("W/out heavy processes / Agile").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                        Mono.just("Without heavy processes").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
                                 .id(agileId)
                                 .childrenIds(null)
                                 .label(label)
@@ -220,7 +220,7 @@ public class DataSeeder {
                                 .build()))
                 )
                 .then(
-                        Mono.just("Taking risk/challenges").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
+                        Mono.just("Taking risk").flatMap(label -> treeStructureRepository.save(TreeStructure.builder()
                                 .id(takingRiskId)
                                 .childrenIds(null)
                                 .label(label)
